@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design Tokens — single source of truth
+   ============================================================ */
+:root {
+  --bg: #0a0908;
+  --bg-elev: #11100e;
+  --surface: #16140f;
+  --fg: #ece6da;
+  --muted: #8a8278;
+  --border: rgba(236, 230, 218, 0.10);
+  --border-strong: rgba(236, 230, 218, 0.18);
+  --accent: #d97757;
+  --accent-dim: #b86347;
+
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Light-mode override — toggle via .light class on <html> */
+html.light {
+  --bg: #f8f4ec;
+  --bg-elev: #f1eadc;
+  --surface: #e8e0cd;
+  --fg: #1a1815;
+  --muted: #6a6258;
+  --border: rgba(26, 24, 21, 0.10);
+  --border-strong: rgba(26, 24, 21, 0.18);
+  --accent: #b85a35;
+  --accent-dim: #8f4424;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: #0a0908;
+}
+
+/* ============================================================
+   Atmospheric grain overlay
+   ============================================================ */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+}
+
+/* ============================================================
+   Cursor glow follower (desktop only)
+   ============================================================ */
+.glow-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 60%);
+  filter: blur(40px);
+  mix-blend-mode: screen;
+  transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+@media (max-width: 768px) {
+  .glow-cursor { display: none; }
+}
+
+/* ============================================================
+   Magnetic underline link
+   ============================================================ */
+.magnetic-link {
+  position: relative;
+  transition: color 0.3s ease;
+}
+.magnetic-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.magnetic-link:hover::after {
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+/* ============================================================
+   Skill pill hover
+   ============================================================ */
+.skill-pill {
+  transition: all 0.25s ease;
+}
+.skill-pill:hover {
+  background: var(--accent);
+  color: #0a0908;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   Project hover
+   ============================================================ */
+.project-card:hover .project-title { color: var(--accent); }
+.project-card:hover .project-arrow { transform: translate(4px, -4px); }
+.project-arrow { transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
