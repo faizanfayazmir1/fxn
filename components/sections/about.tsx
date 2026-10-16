@@ -18,7 +18,7 @@ export function About() {
             </h2>
             <div className="mt-10 space-y-5 text-[15px] leading-[1.7] text-muted max-w-xl">
               <p>
-                At Amazon, I work on services that have to be both fast and forgettable — the kind that just work, at any scale, in any region. My day-to-day is a mix of Java, Python, and a healthy amount of AWS.
+                At Amazon, I work on services that have to be both fast and forgettable — the kind that just work, at any scale. My day-to-day is Java and Spring Boot, Python and FastAPI, a healthy amount of AWS, and increasingly, LLM-powered tooling that takes the toil out of operations.
               </p>
               <p>
                 Before that, I spent a season at IIT Guwahati doing ML research on Bose–Einstein Condensates — which taught me that the cleanest systems often hide the deepest physics. That instinct carries over to everything I build now.
@@ -34,7 +34,7 @@ export function About() {
               {STATS.map((s, i) => (
                 <div key={i} className="bg-bg p-7">
                   <div className="font-serif text-4xl md:text-5xl text-accent">
-                    <Counter to={s.value} suffix={s.suffix} />
+                    <Counter to={s.value} suffix={s.suffix} decimals={s.decimals} />
                   </div>
                   <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted mt-2">
                     {s.label}
@@ -50,7 +50,7 @@ export function About() {
                 </span>
               </div>
               <p className="text-sm leading-relaxed">
-                Exploring AI-driven systems and how foundation models reshape backend architecture.
+                Building production LLM &amp; RAG pipelines — AI-assisted triage that reads the logs, finds the root cause and routes the ticket before a human has to.
               </p>
             </div>
           </Reveal>

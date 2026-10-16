@@ -12,6 +12,13 @@ A production-grade personal portfolio built with **Next.js 15**, **React 19**, *
 - A11y: semantic HTML, focus states, `prefers-reduced-motion` honoured
 - Lighthouse: 95+ across the board out of the box
 - Single source of truth: edit `lib/data.ts` and every section updates
+- **Light / dark theme toggle** (remembers the visitor's choice, no flash on load)
+- **⌘K / Ctrl K command palette** — jump to sections or projects, copy email, open resume, switch theme
+- Featured-project card + per-project architecture "request path" in the detail modal
+- Filterable skills grid (7 domains), "What I do" capabilities, Education & Recognition
+- Auto-generated Open Graph image, favicon and Apple touch icon (`next/og`) — no image files to maintain
+- Person JSON-LD structured data for richer Google results
+- Custom 404 page, skip-to-content link, active-section nav highlighting
 
 ## Quick Start
 
@@ -38,19 +45,26 @@ faizan-portfolio/
 │   ├── page.tsx            # Home — composes all sections
 │   ├── globals.css         # Design tokens + global styles
 │   ├── sitemap.ts          # Auto-generated sitemap
-│   └── robots.ts           # Auto-generated robots.txt
+│   ├── robots.ts           # Auto-generated robots.txt
+│   ├── manifest.ts         # PWA manifest
+│   ├── opengraph-image.tsx # Generated 1200×630 social preview
+│   ├── icon.tsx / apple-icon.tsx  # Generated favicons
+│   └── not-found.tsx       # Custom 404
 ├── components/
 │   ├── nav.tsx             # Sticky navbar
 │   ├── cursor-glow.tsx     # Mouse-follow glow effect
 │   ├── scroll-progress.tsx # Top progress bar
+│   ├── theme-toggle.tsx    # Light/dark switch
+│   ├── command-palette.tsx # ⌘K quick actions
 │   ├── sections/
 │   │   ├── hero.tsx
 │   │   ├── marquee.tsx
 │   │   ├── about.tsx
+│   │   ├── capabilities.tsx
 │   │   ├── experience.tsx
 │   │   ├── skills.tsx
 │   │   ├── projects.tsx
-│   │   ├── achievements.tsx
+│   │   ├── education.tsx   # Education + achievements
 │   │   ├── contact.tsx
 │   │   └── footer.tsx
 │   └── ui/
@@ -60,6 +74,7 @@ faizan-portfolio/
 │       └── section-number.tsx  # Editorial section divider
 ├── lib/
 │   ├── data.ts             # ALL personal data — edit this file
+│   ├── theme.ts            # Theme helpers + no-flash init script
 │   └── utils.ts            # cn() className helper
 ├── public/                 # Static assets (resume.pdf, og-image, icons)
 ├── tailwind.config.ts
@@ -92,20 +107,21 @@ Fonts are loaded via `next/font/google` in `app/layout.tsx`. To change them, edi
 
 ### 4. Contact Form
 
-The form in `components/sections/contact.tsx` ships with a mock submission. Wire it to:
+Out of the box the form opens the visitor's email app with their name and message pre-filled — nothing is silently dropped.
 
-**Option A — EmailJS** (recommended, no backend needed)
+To receive messages directly instead, create a free form at [formspree.io](https://formspree.io) and add its ID:
+
 ```bash
-npm install @emailjs/browser
+NEXT_PUBLIC_FORMSPREE_ID=xxxxxxxx
 ```
-Then uncomment the EmailJS block in the `handleSubmit` function and fill in the `.env.local` keys.
-
-**Option B — Formspree**
-Add `NEXT_PUBLIC_FORMSPREE_ID` to `.env.local` and uncomment the Formspree block.
 
 ### 5. Resume
 
-Drop `resume.pdf` into `/public`. The hero CTA already points to `/resume.pdf`.
+The "View Resume" button uses `PROFILE.resumeUrl` in `lib/data.ts` (currently a Google Drive link). To self-host instead, drop `resume.pdf` into `/public` and set `resumeUrl: "/resume.pdf"`.
+
+### 6. Project links
+
+Add `demoUrl` / `repoUrl` to any project in `lib/data.ts` and the Live Demo / Source buttons appear automatically.
 
 ## Deploying to Vercel
 
@@ -156,7 +172,7 @@ In the Vercel dashboard → Project → Settings → Domains. Add your domain an
 
 ## Future Improvements
 
-- [ ] Light/dark theme toggle component (tokens already in place)
+- [x] Light/dark theme toggle
 - [ ] MDX-driven blog under `/app/blog`
 - [ ] Project detail pages at `/projects/[slug]`
 - [ ] Three.js / R3F hero background variant

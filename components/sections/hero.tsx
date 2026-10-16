@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, ChevronDown, Download, Mail } from "lucide-react";
+import { ArrowUpRight, FileText, Github, Linkedin, Mail } from "lucide-react";
 import { PROFILE } from "@/lib/data";
 import { Reveal } from "@/components/ui/reveal";
 import { Typewriter } from "@/components/ui/typewriter";
@@ -91,9 +91,11 @@ export function Hero() {
             </a>
             <a
               href={PROFILE.resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium border border-border-strong hover:bg-surface transition"
             >
-              Download Resume <Download size={15} />
+              View Resume <FileText size={15} />
             </a>
             <a
               href="#contact"
@@ -101,13 +103,40 @@ export function Hero() {
             >
               Contact <Mail size={15} />
             </a>
+            <div className="flex items-center gap-2 sm:ml-auto">
+              {[
+                { href: PROFILE.github, label: "GitHub", Icon: Github },
+                { href: PROFILE.linkedin, label: "LinkedIn", Icon: Linkedin },
+                { href: `mailto:${PROFILE.email}`, label: "Email", Icon: Mail },
+              ].map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="w-11 h-11 rounded-full flex items-center justify-center border border-border hover:bg-accent hover:border-accent hover:text-[#0a0908] transition"
+                >
+                  <Icon size={16} />
+                </a>
+              ))}
+            </div>
           </div>
         </Reveal>
 
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted">
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase">scroll</span>
-          <ChevronDown size={14} className="animate-bounce" />
-        </div>
+        <Reveal delay={520}>
+          <dl className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-border rounded-sm overflow-hidden border border-border">
+            {PROFILE.quickFacts.map((f) => (
+              <div key={f.label} className="bg-bg/80 backdrop-blur px-5 py-4">
+                <dt className="font-mono text-[10px] tracking-[0.22em] uppercase text-muted">
+                  {f.label}
+                </dt>
+                <dd className="mt-1 text-[13.5px] leading-snug">{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
+
       </div>
     </section>
   );
