@@ -5,14 +5,19 @@ import { SectionNumber } from "@/components/ui/section-number";
 
 export function Experience() {
   return (
-    <section id="work" className="relative px-6 md:px-10 py-32 z-10">
+    <section id="work" className="relative px-6 md:px-10 py-24 md:py-32 z-10">
       <div className="max-w-6xl mx-auto">
-        <SectionNumber n="02" title="Experience" />
-        <div className="space-y-px">
+        <SectionNumber n="03" title="Experience" />
+        <Reveal>
+          <h2 className="font-serif text-4xl md:text-5xl leading-[1.05] mb-14 max-w-2xl">
+            Where I&apos;ve been <span className="italic text-accent">shipping</span>.
+          </h2>
+        </Reveal>
+        <div className="relative">
           {EXPERIENCE.map((exp, i) => (
-            <Reveal key={i} delay={i * 120}>
-              <div className="group grid md:grid-cols-12 gap-6 py-10 border-t border-border hover:bg-bg-elev transition-colors px-2 -mx-2 rounded-sm">
-                <div className="md:col-span-3">
+            <Reveal key={exp.company} delay={i * 120}>
+              <article className="grid md:grid-cols-12 gap-6 md:gap-10 py-12 border-t border-border">
+                <div className="md:col-span-4 md:sticky md:top-28 self-start">
                   <div className="font-mono text-[11px] tracking-[0.2em] uppercase text-muted flex items-center gap-2">
                     <Calendar size={12} />
                     {exp.period}
@@ -23,29 +28,18 @@ export function Experience() {
                       Current
                     </div>
                   )}
-                </div>
-                <div className="md:col-span-9">
-                  <div className="flex items-baseline flex-wrap gap-x-3 gap-y-1 mb-1">
-                    <h3 className="font-serif italic text-3xl md:text-4xl leading-tight text-fg">
-                      {exp.company}
-                    </h3>
-                    <span className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted">
-                      — {exp.role}
-                    </span>
+                  <h3 className="mt-5 font-serif italic text-4xl md:text-5xl leading-[1.02] text-fg">
+                    {exp.company}
+                  </h3>
+                  <div className="mt-2 font-mono text-[11px] tracking-[0.15em] uppercase text-accent">
+                    {exp.role}
                   </div>
-                  <div className="font-mono text-[11px] text-muted mb-4 flex items-center gap-1.5">
+                  <div className="mt-3 font-mono text-[11px] text-muted flex items-center gap-1.5">
                     <MapPin size={11} />
                     {exp.location}
                   </div>
-                  <ul className="space-y-2.5 text-[14.5px] text-muted leading-[1.6] mb-5">
-                    {exp.bullets.map((b, j) => (
-                      <li key={j} className="flex gap-3">
-                        <span className="text-accent mt-2 flex-shrink-0">—</span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="flex flex-wrap gap-2">
+                  <p className="mt-6 text-[14.5px] leading-[1.65] text-muted">{exp.summary}</p>
+                  <div className="mt-6 flex flex-wrap gap-2">
                     {exp.stack.map((s) => (
                       <span
                         key={s}
@@ -56,9 +50,31 @@ export function Experience() {
                     ))}
                   </div>
                 </div>
-              </div>
+                <ol className="md:col-span-8 grid sm:grid-cols-2 gap-px bg-border rounded-sm overflow-hidden self-start">
+                  {exp.bullets.map((b, j) => (
+                    <li
+                      key={b.title}
+                      className={
+                        "bg-bg p-6 hover:bg-bg-elev transition-colors" +
+                        (exp.bullets.length % 2 === 1 && j === exp.bullets.length - 1
+                          ? " sm:col-span-2"
+                          : "")
+                      }
+                    >
+                      <div className="flex items-baseline gap-3 mb-2">
+                        <span className="font-mono text-[10px] text-accent">
+                          {String(j + 1).padStart(2, "0")}
+                        </span>
+                        <h4 className="font-medium text-[15px]">{b.title}</h4>
+                      </div>
+                      <p className="text-[13.5px] text-muted leading-[1.65]">{b.text}</p>
+                    </li>
+                  ))}
+                </ol>
+              </article>
             </Reveal>
           ))}
+          <div className="border-t border-border" />
         </div>
       </div>
     </section>

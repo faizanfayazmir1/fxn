@@ -8,15 +8,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: "var(--bg)",
-        "bg-elev": "var(--bg-elev)",
-        surface: "var(--surface)",
-        fg: "var(--fg)",
-        muted: "var(--muted)",
+        bg: "color-mix(in srgb, var(--bg) calc(<alpha-value> * 100%), transparent)",
+        "bg-elev": "color-mix(in srgb, var(--bg-elev) calc(<alpha-value> * 100%), transparent)",
+        surface: "color-mix(in srgb, var(--surface) calc(<alpha-value> * 100%), transparent)",
+        fg: "color-mix(in srgb, var(--fg) calc(<alpha-value> * 100%), transparent)",
+        muted: "color-mix(in srgb, var(--muted) calc(<alpha-value> * 100%), transparent)",
         border: "var(--border)",
         "border-strong": "var(--border-strong)",
-        accent: "var(--accent)",
-        "accent-dim": "var(--accent-dim)",
+        accent: "color-mix(in srgb, var(--accent) calc(<alpha-value> * 100%), transparent)",
+        "accent-dim": "color-mix(in srgb, var(--accent-dim) calc(<alpha-value> * 100%), transparent)",
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Georgia", "serif"],

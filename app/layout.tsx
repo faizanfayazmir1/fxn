@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Serif, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { PROFILE } from "@/lib/data";
+import { EDUCATION, PROFILE } from "@/lib/data";
+import { themeInitScript } from "@/lib/theme";
 
 const serif = Instrument_Serif({
   subsets: ["latin"],
@@ -33,11 +34,11 @@ export const metadata: Metadata = {
     default: `${PROFILE.name} — Software Development Engineer`,
     template: `%s · ${PROFILE.name}`,
   },
-  description: `Personal site of ${PROFILE.name}, a Software Development Engineer at ${PROFILE.company} working on backend systems, cloud, and distributed architecture.`,
+  description: `${PROFILE.name} — Software Development Engineer at ${PROFILE.company} building distributed backend systems, cloud-native services on AWS, and production GenAI / RAG pipelines.`,
   keywords: [
     PROFILE.name, "Software Engineer", "Backend Engineer", "Amazon",
-    "AWS", "Java", "Python", "Distributed Systems", "Bengaluru",
-    "Portfolio",
+    "AWS", "Java", "Spring Boot", "Python", "FastAPI", "Distributed Systems",
+    "GenAI", "LLM", "RAG", "LangChain", "System Design", "Bengaluru", "Portfolio",
   ],
   authors: [{ name: PROFILE.name }],
   creator: PROFILE.name,
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     title: `${PROFILE.name} — Software Development Engineer`,
-    description: `Backend, cloud, distributed systems. Currently @ ${PROFILE.company}.`,
+    description: `Distributed backends, AWS and production GenAI. Currently SDE @ ${PROFILE.company}.`,
     siteName: PROFILE.name,
   },
   twitter: {
@@ -63,7 +64,24 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
     },
   },
-  manifest: "/manifest.webmanifest",
+  alternates: { canonical: "/" },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: PROFILE.name,
+  jobTitle: PROFILE.role,
+  worksFor: { "@type": "Organization", name: "Amazon" },
+  address: { "@type": "PostalAddress", addressLocality: "Bengaluru", addressCountry: "IN" },
+  email: `mailto:${PROFILE.email}`,
+  url: SITE_URL,
+  sameAs: [PROFILE.github, PROFILE.linkedin],
+  alumniOf: EDUCATION.map((e) => ({ "@type": "CollegeOrUniversity", name: e.school })),
+  knowsAbout: [
+    "Distributed Systems", "Java", "Spring Boot", "Python", "FastAPI", "AWS",
+    "Large Language Models", "Retrieval-Augmented Generation", "System Design",
+  ],
 };
 
 export const viewport: Viewport = {
@@ -79,7 +97,18 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`${serif.variable} ${sans.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="grain">
         {children}
       </body>

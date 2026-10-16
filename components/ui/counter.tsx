@@ -6,9 +6,10 @@ interface CounterProps {
   to: number;
   suffix?: string;
   duration?: number;
+  decimals?: number;
 }
 
-export function Counter({ to, suffix = "", duration = 1400 }: CounterProps) {
+export function Counter({ to, suffix = "", duration = 1400, decimals = 0 }: CounterProps) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -22,7 +23,7 @@ export function Counter({ to, suffix = "", duration = 1400 }: CounterProps) {
           const tick = (t: number) => {
             const p = Math.min((t - t0) / duration, 1);
             const eased = 1 - Math.pow(1 - p, 3);
-            setN(Math.floor(eased * to));
+            setN(eased * to);
             if (p < 1) requestAnimationFrame(tick);
             else setN(to);
           };
@@ -38,7 +39,7 @@ export function Counter({ to, suffix = "", duration = 1400 }: CounterProps) {
 
   return (
     <span ref={ref}>
-      {n}
+      {decimals ? n.toFixed(decimals) : Math.floor(n)}
       {suffix}
     </span>
   );

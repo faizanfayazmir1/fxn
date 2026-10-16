@@ -6,7 +6,7 @@ import { PROFILE } from "@/lib/data";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionNumber } from "@/components/ui/section-number";
 
-type FormStatus = "idle" | "sending" | "sent" | "error";
+type FormStatus = "idle" | "sending" | "sent" | "handoff" | "error";
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
@@ -27,43 +27,38 @@ export function Contact() {
     e.preventDefault();
     setStatus("sending");
 
-    // ===== Option A: EmailJS =====
-    // Uncomment + `npm i @emailjs/browser` and fill in env vars.
-    //
-    // try {
-    //   const emailjs = (await import("@emailjs/browser")).default;
-    //   await emailjs.send(
-    //     process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-    //     process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-    //     { from_name: form.name, from_email: form.email, message: form.message },
-    //     process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!,
-    //   );
-    //   setStatus("sent");
-    //   setForm({ name: "", email: "", message: "" });
-    // } catch {
-    //   setStatus("error");
-    // }
+    // If a Formspree form ID is configured, send through it.
+    const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+    if (formspreeId) {
+      try {
+        const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(form),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        setStatus("sent");
+        setForm({ name: "", email: "", message: "" });
+        setTimeout(() => setStatus("idle"), 3500);
+      } catch {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 3500);
+      }
+      return;
+    }
 
-    // ===== Option B: Formspree =====
-    // const id = process.env.NEXT_PUBLIC_FORMSPREE_ID;
-    // const res = await fetch(`https://formspree.io/f/${id}`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json", Accept: "application/json" },
-    //   body: JSON.stringify(form),
-    // });
-    // setStatus(res.ok ? "sent" : "error");
-
-    // Mock send for the starter:
-    await new Promise((r) => setTimeout(r, 1100));
-    setStatus("sent");
-    setForm({ name: "", email: "", message: "" });
-    setTimeout(() => setStatus("idle"), 3000);
+    // Otherwise hand off to the visitor's email app with everything pre-filled.
+    const subject = encodeURIComponent(`Hello from ${form.name}`);
+    const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
+    window.location.href = `mailto:${PROFILE.email}?subject=${subject}&body=${body}`;
+    setStatus("handoff");
+    setTimeout(() => setStatus("idle"), 4000);
   };
 
   return (
     <section id="contact" className="relative px-6 md:px-10 py-32 z-10">
       <div className="max-w-6xl mx-auto">
-        <SectionNumber n="06" title="Contact" />
+        <SectionNumber n="07" title="Contact" />
         <div className="grid md:grid-cols-12 gap-12">
           <Reveal className="md:col-span-7">
             <h2 className="font-serif text-5xl md:text-7xl leading-[0.98] tracking-[-0.01em]">
@@ -72,7 +67,7 @@ export function Contact() {
               <span className="italic text-accent">something</span> good.
             </h2>
             <p className="mt-8 text-muted leading-relaxed max-w-md text-[15px]">
-              Open to interesting backend, cloud, or AI-systems work. Reach out — I usually reply within a day.
+              Open to interesting backend, distributed-systems and GenAI engineering roles. Reach out — I usually reply within a day.
             </p>
             <div className="mt-10 space-y-5">
               <button onClick={copyEmail} className="flex items-center gap-3 group">
@@ -84,10 +79,10 @@ export function Contact() {
                   <Copy size={13} className="opacity-50 group-hover:opacity-100 transition" />
                 )}
               </button>
-              <div className="flex items-center gap-3">
+              <a href={`tel:${PROFILE.phone.replace(/\s/g, "")}`} className="flex items-center gap-3">
                 <Phone size={16} className="text-accent" />
-                <span className="font-mono text-sm">{PROFILE.phone}</span>
-              </div>
+                <span className="font-mono text-sm magnetic-link">{PROFILE.phone}</span>
+              </a>
               <div className="flex items-center gap-3">
                 <MapPin size={16} className="text-accent" />
                 <span className="font-mono text-sm">{PROFILE.location}</span>
@@ -131,10 +126,12 @@ export function Contact() {
                 Send a message
               </div>
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
+                <label htmlFor="c-name" className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
                   Name
                 </label>
                 <input
+                  id="c-name"
+                  autoComplete="name"
                   type="text"
                   required
                   value={form.name}
@@ -143,10 +140,12 @@ export function Contact() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
+                <label htmlFor="c-email" className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
                   Email
                 </label>
                 <input
+                  id="c-email"
+                  autoComplete="email"
                   type="email"
                   required
                   value={form.email}
@@ -155,10 +154,11 @@ export function Contact() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
+                <label htmlFor="c-message" className="block text-[11px] font-mono uppercase tracking-wider text-muted mb-2">
                   Message
                 </label>
                 <textarea
+                  id="c-message"
                   rows={4}
                   required
                   value={form.message}
@@ -182,7 +182,8 @@ export function Contact() {
                     Sent <Check size={14} />
                   </>
                 )}
-                {status === "error" && <>Try again</>}
+                {status === "handoff" && <>Opening your email app…</>}
+                {status === "error" && <>Couldn&apos;t send — email me directly</>}
               </button>
             </form>
           </Reveal>
